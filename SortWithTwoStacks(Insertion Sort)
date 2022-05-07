@@ -1,0 +1,96 @@
+public class Solution {
+  public void sort(LinkedList<Integer> s1) {
+    
+    // 算法 insertion sort
+    //  先把s1 按top to bottom descending order放到 s2, 再全部倒回s1
+    // 题目：
+    //  s1 [ 6 7 3 5  7                                                                                     
+    //  s2 [ 
+    // 即倒数第二步为：
+    //  s1 [
+    //  s2 [ 3 5 6 7 7
+    // 最后一步：
+    //  s1 [ 7 7 6 5 3                                                                                   
+    //  s2 [ 
+    
+
+    //  每一次：
+    //  Step 1：从S1拿出 pollFirst() 一个顶端元素 tmp
+    //  Step 2: 如果s2有元素比tmp大，即挡住了tmp（tmp就不能放在正确位置）, 把大的元素挪回s1
+    //  Step 3: step 2 取除 了障碍 就可以安全把tmp 放到s2 了
+
+
+    // 步骤为：
+    //  Process 1:
+    //  s1 [ 6 7 3 5            (拿出 tmp 7)                                                                                     
+    //  s2 [ 7                     s2里什么都没有（即没有数能挡住7放在正确位置的情况），那把7放入s2
+    
+    // Process 2:
+    //  s1 [ 6 7 3 7             (拿出 tmp 5)                                                                                  
+    //  s2 [ 5                  s2里7比5大，挡住了5，把7放回s1，再把5放入s2
+    
+    // Process 3:
+    //  s1 [ 6 7 3               (拿出 tmp 7)                                                                                  
+    //  s2 [ 5 7                 s2里没有比7大的（即没有数能挡住7放在正确位置的情况），把7放入s2
+
+    // Process 4:
+    //  s1 [ 6 7                 (拿出 tmp 3)                                                                                  
+    //  s2 [ 5 7                 
+    
+    //  s1 [ 6 7 7  5                                                                                            
+    //  s2 [ 3                   s2里5 和 7 比3大，挡住了3，把5和7放回s1，再把3放入s2
+    
+    // Process 5 :
+    //  s1 [ 6 7 7                (拿出tmp 5)                                                                                  
+    //  s2 [ 3 5                   5放入s2(判断和step 3一样)
+
+    // Process 6 :
+    //  s1 [ 6 7                  (拿出tmp 7)                                                                                  
+    //  s2 [ 3 5  7               7放入s2(判断和step 3一样)
+
+    // Process 7 :
+    //  s1 [ 6                   (拿出tmp 7)                                                                                  
+    //  s2 [ 3 5  7 7             7放入s2(判断和step 3一样)
+
+    // Process 8 :
+    //  s1 [ 7  7                   (拿出tmp 6)                                                                                  
+    //  s2 [ 3 5 6              把 7 7 放回s1, 6 放s2
+
+    // Process 9 :
+    //  s1 [ 7                   (拿出tmp 7)                                                                                  
+    //  s2 [ 3 5 6 7              7放入s2(判断和step 3一样)
+        
+    // Process 10 :
+    //  s1 [                      (拿出tmp 7)                                                                                  
+    //  s2 [ 3 5 6 7 7             7放入s2(判断和step 3一样)
+    // ---------------------------------------------
+
+    // Process 11 :
+    //  s1 [ 7 7 6 5 3             s2全倒回s1                                                                   
+    //  s2 [ 
+
+    LinkedList<Integer> s2 = new LinkedList<Integer>();
+    
+    while (!s1.isEmpty()){
+      
+      //  s1 top 取出 tmp
+      int tmp = s1.pollFirst();
+      
+      // s2里只要比 s1 top 取出 tmp大， 就放回s1  (这样保证S2里top to bottom in descending order， s2 top要保证比新来的数小)
+      while (!s2.isEmpty() && s2.peekFirst() > tmp) {
+        s1.offerFirst(s2.pollFirst());
+      }
+
+      // s1 取出的tmp放入s2
+      s2.offerFirst(tmp);
+    }
+
+    // Sort好的都在s2里 (top to bottom in descending order)，放回s1
+    while(!s2.isEmpty()) {
+      s1.offerFirst(s2.pollFirst());
+    }
+  }
+}
+
+// TC: O(2((n-1)+(n-2)... + 1)) = O(n^2)
+// SC: O(1) if not consider second stack
