@@ -1,0 +1,112 @@
+public class Solution {
+  
+  //  node for doubly linked list
+  static class Node {
+    Node prev;
+    Node next;
+    Character ch;
+
+    Node (Character ch) {
+      this.ch = ch;
+    }
+  }
+
+  private Node head;
+  private Node tail;
+
+  private HashMap<Character, Node> map;
+  
+  // constructor
+  public Solution() {
+    map = new HashMap<Character, Node>();
+  }
+  
+  // 从外界传入数据
+  public void read(char ch) {
+    
+    Node node = map.get(ch);
+    
+    // 如果第一次出现(case 1)， new 一下加到list和map里
+    if (node == null) {
+      node = new Node(ch);
+      append(node);
+    
+    // 如果不是第一次出现, 并且没有从list里删除（即第二次出现， case 2）,  把node删除并在map 里value设成null
+    } else if (node.ch != null) {
+      remove(node);
+    
+    // 如果不是第一次出现, 并已经从list里删除（即第从第3到第n次出现， case 3）,  什么都不做
+    } else {
+      return;
+    }
+  }
+  
+  // 获取第一个非重复的值， 即给solution值
+  public Character firstNonRepeating() {
+    if (head == null) { // doubly linked里已经没有值了，那就证明没有非重复的值了
+      return null;
+    }
+    return head.ch;
+  }
+
+  // 从list 里 拿掉这个node
+  private void remove(Node node) {
+
+    //  5< - >3< - >2  
+    //        node
+    //   node.prev = 5
+    //   5   - >    2  
+    if (node.prev != null) {
+      node.prev.next = node.next;
+    }
+    //  5< - >3< - >2  
+    //        node
+    //   node.next = 2
+    //   5   <-      2  
+    if (node.next != null) {
+      node.next.prev = node.prev;
+    }
+
+    //  5< - >3< - >2  
+    // node
+    //   
+    //        3 <- >  2  
+    if (node == head) {
+      head = head.next; // 因为head之前都不会看
+    }
+    //  5< - >3< - >2  
+    //              node
+    //   
+    //  5 <- > 3  
+    if (node == tail) {
+      tail = tail.prev; // 因为tail之后都不会看
+    }
+    node.next = null; // 以防此点链接到别的点
+    node.prev = null; // 以防此点链接到别的点
+    
+    node.ch = null; // 和205题不同， 删除不是从map里删掉， 而是要保留并把 value调成null
+  }
+
+  private void append(Node node) {
+    map.put(node.ch, node);
+    
+    // 如果list 里什么都没有
+    if (tail == null) {
+      tail = node;
+      head = node;
+    
+    // 如过list里已经有node了
+    // 5 <- > 3
+    //              tail
+    //           <-> 2
+    } else {
+      tail.next = node;
+      node.prev = tail;
+      tail = node;
+    }
+    
+  }
+}
+
+// TC: O(1)
+// SC: O(n)
